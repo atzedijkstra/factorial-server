@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import           Control.Applicative
@@ -15,7 +16,7 @@ main = quickHttpServe site
 
 site :: Snap ()
 site =
-    ifTop (writeBS $ B.pack $ "Hi World! You know what? The value of `factorial 5' " ++ (show $ factorial 5) ++ "!") <|>
+    ifTop (writeBS $ B.pack $ "factorial 5 = " ++ (show $ factorial 5)) <|>
     route [ ("foo", writeBS "bar")
           , ("echo/:echoparam", echoHandler)
           ] <|>
