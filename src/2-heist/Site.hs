@@ -91,7 +91,7 @@ handleFactorial1 = do
 factorial2Form :: Monad m => Integer -> Form T.Text m Integer
 factorial2Form n = 
     (\n' -> read $ T.unpack n')
-    <$> "number" .: check "Must be non-empty" ncheck
+    <$> "number" .: check "Must be non-empty && a number > 0" ncheck
                           (D.text $ Just $ T.pack $ show n)
   where
     ncheck n = (not $ T.null n) && isDigit (T.head n) && isJust mn && n' > 0

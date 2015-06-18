@@ -57,11 +57,9 @@ handleFactorial3 = do
     mbNumber <- getParam "number"
     blaze $ H.html $ do
       H.head $ H.title "Factorial" 
-      H.body $
-        maybe
-          (H.text "must specify factorial/number in URL")
-          (\n -> H.text $ showf n $ factorial n)
-          (readNumber mbNumber)
+      H.body $ case readNumber mbNumber of
+          Just n -> H.text $ showf n $ factorial n
+          _ -> H.text "must specify factorial/number in URL"
   where showf n f = T.pack $ "factorial " ++ show n ++ " = " ++ show f
 
 -- | More fancy html
@@ -70,10 +68,8 @@ handleFactorial4 = do
     mbNumber <- getParam "number"
     blaze $ H.html $ do
       H.head $ H.title "Factorial" 
-      H.body $
-        maybe
-          (H.text "must specify factorial/number in URL")
-          (\n -> do
+      H.body $ case readNumber mbNumber of
+          Just n -> do
             H.hr
             H.table H.! H.customAttribute "border" "1" $ do
               H.tr $ do
@@ -83,6 +79,5 @@ handleFactorial4 = do
                 H.td $ H.toHtml n
                 H.td $ H.toHtml $ factorial n
             H.hr
-          )
-          (readNumber mbNumber)
+          _ -> H.text "must specify factorial/number in URL"
 

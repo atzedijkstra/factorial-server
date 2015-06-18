@@ -8,7 +8,7 @@ import           Snap.Util.FileServe
 import           Snap.Http.Server
 import           Data.ByteString.Char8 as B
 
-factorial :: Int -> Int
+factorial :: Integer -> Integer
 factorial n = product [1..n]
 
 main :: IO ()
