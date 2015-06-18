@@ -23,13 +23,14 @@ import           Snap.Snaplet
 import           Snap.Snaplet.Config
 import           Snap.Core
 import           System.IO
-import           Site2
-
 #ifdef DEVELOPMENT
 import           Snap.Loader.Dynamic
 #else
 import           Snap.Loader.Static
 #endif
+------------------------------------------------------------------------------
+import           Site
+------------------------------------------------------------------------------
 
 
 ------------------------------------------------------------------------------
