@@ -23,6 +23,7 @@ import           Snap.Snaplet.Auth.Backends.JsonFile
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
 import           Snap.Util.FileServe
+import           Snap.Snaplet.AcidState
 import           Heist
 import qualified Heist.Interpreted as I
 import           Text.Digestive as D
@@ -79,18 +80,8 @@ handleNewUser = method GET handleForm <|> method POST handleFormSubmit
 
 ------------------------------------------------------------------------------
 -- | Handle factorial
-handleFactorial1 :: Handler App App ()
-handleFactorial1 = do
-    mbNumber <- getParam "number"
-    case readNumber mbNumber of
-      Just n -> renderWithSplices "Factorial1" $ do
-            "number" ## nr n
-            "factorial" ## (nr $ factorial n)
-      _ -> writeBS "must specify factorial/number in URL"
-  where nr n = return $ renderHtmlNodes $ H.toMarkup n
-
-factorial2Form :: Monad m => Integer -> Form T.Text m Integer
-factorial2Form n = 
+factorial3Form :: Monad m => Integer -> Form T.Text m Integer
+factorial3Form n = 
     (\n' -> read $ T.unpack n')
     <$> "number" .: check "Must be non-empty && a number > 0" ncheck
                           (D.text $ Just $ T.pack $ show n)
@@ -98,24 +89,14 @@ factorial2Form n =
     ncheck n = (not $ T.null n) && isDigit (T.head n) && isJust mn && n' > 0
       where mn@(~(Just (n' :: Integer))) = R.readMaybe $ T.unpack n
 
-handleFactorial2 :: String -> Integer -> Handler App App ()
-handleFactorial2 postAction n = do
-    (formView, formResult) <- DS.runForm "form" $ factorial2Form n
+handleFactorial3 :: String -> Handler App App ()
+handleFactorial3 postAction = do
+    n <- query AcidNr
+    (formView, formResult) <- DS.runForm "form" $ factorial3Form n
     case formResult of
-      Just n' -> redirect $ B.pack $ "/factorial1/" ++ show n'
-      _ -> do
-          heistLocal (bindDigestiveSplices formView)
-            $ renderWithSplices "Factorial2" $ do
-                "postAction" ## (I.textSplice $ T.pack postAction)
-  where nr n = I.textSplice $ T.pack $ show n
-
--- | This version does not really work because state is not propagated,
--- included here as a stepping stone to the use of acid in later versions
-handleFactorial3 :: String -> Integer -> Handler App App ()
-handleFactorial3 postAction n = do
-    (formView, formResult) <- DS.runForm "form" $ factorial2Form n
-    case formResult of
-      Just n' -> redirect $ B.pack postAction
+      Just n' -> do
+          update $ AcidSetNr n'
+          redirect $ B.pack postAction
       _ -> do
           heistLocal (bindDigestiveSplices formView)
             $ renderWithSplices "Factorial3" $ do
@@ -128,10 +109,7 @@ handleFactorial3 postAction n = do
 routes :: [(ByteString, Handler App App ())]
 routes = [ ("/login",    with auth handleLoginSubmit)
          , ("/logout",   with auth handleLogout)
-         , ("/factorial/:number" , handleFactorial1)
-         , ("/factorial1/:number", handleFactorial1)
-         , ("/factorial2"        , handleFactorial2 "factorial2" 5)
-         , ("/factorial3"        , handleFactorial3 "factorial3" 5)
+         , ("/factorial3"        , handleFactorial3 "factorial3")
          , ("/new_user", with auth handleNewUser)
          , ("",          serveDirectory "static")
          ]
@@ -150,7 +128,8 @@ app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     -- you'll probably want to change this to a more robust auth backend.
     a <- nestSnaplet "auth" auth $
            initJsonFileAuthManager defAuthSettings sess "users.json"
+    c  <- nestSnaplet "acid" acid $ acidInit $ AppAcid 5
     addRoutes routes
     addAuthSplices h auth
-    return $ App h s a
+    return $ App h s a c
 

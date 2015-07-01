@@ -6,6 +6,11 @@
       <td><dfInputText ref="number" size="5" /></td>
       <td><dfErrorList class="alert" ref="number" /></td>
     </tr>
+    <tr>
+      <th>Factorial</th>
+      <td><factorial/></td>
+      <td></td>
+    </tr>
 	</table>
     <dfInputSubmit value="Ok" />
 </dfForm>
