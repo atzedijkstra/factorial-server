@@ -16,6 +16,10 @@ Flag development
   Description: Whether to build the server in development (interpreted) mode
   Default: False
 
+Flag dumpsplice
+  Description: Whether to dump splices during build or not
+  Default: False
+
 Flag old-base
   default: False
   manual: False
@@ -146,6 +150,11 @@ Executable factorial-server-3acid
     build-depends:
       base                      >= 4.4      && < 5,
       lens                      >= 3.7.6    && < 4.12
+
+  if flag(dumpsplice)
+    ghc-options: -ddump-splices
+  else
+    ghc-options: 
 
   if flag(development)
     build-depends:
