@@ -13,7 +13,7 @@ import           Control.Applicative
 import           Data.ByteString.Char8 as B
 import           Data.Char
 import           Data.Maybe
-import           Data.Monoid
+-- import           Data.Monoid
 import qualified Data.Text as T
 import           Text.Read as R
 import           Snap.Core
@@ -29,8 +29,8 @@ import qualified Heist.Interpreted as I
 import           Text.Digestive as D
 import qualified Text.Digestive.Snap as DS
 import           Text.Digestive.Heist
-import qualified Text.Blaze.Html5 as H
-import           Text.Blaze.Renderer.XmlHtml
+-- import qualified Text.Blaze.Html5 as H
+-- import           Text.Blaze.Renderer.XmlHtml
 ------------------------------------------------------------------------------
 import           Application
 ------------------------------------------------------------------------------
@@ -41,8 +41,10 @@ import           Application
 factorial :: Integer -> Integer
 factorial n = product [1..n]
 
+{-
 readNumber :: Maybe ByteString -> Maybe Integer
 readNumber mn = fmap B.unpack mn >>= R.readMaybe
+-}
 
 ------------------------------------------------------------------------------
 -- | Render login form

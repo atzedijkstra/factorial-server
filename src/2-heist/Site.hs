@@ -13,7 +13,7 @@ import           Control.Applicative
 import           Data.ByteString.Char8 as B
 import           Data.Char
 import           Data.Maybe
-import           Data.Monoid
+-- import           Data.Monoid
 import qualified Data.Text as T
 import           Text.Read as R
 import           Snap.Core
@@ -107,7 +107,7 @@ handleFactorial2 postAction n = do
           heistLocal (bindDigestiveSplices formView)
             $ renderWithSplices "Factorial2" $ do
                 "postAction" ## (I.textSplice $ T.pack postAction)
-  where nr n = I.textSplice $ T.pack $ show n
+  -- where nr n = I.textSplice $ T.pack $ show n
 
 -- | This version does not really work because state is not propagated,
 -- included here as a stepping stone to the use of acid in later versions
@@ -115,7 +115,7 @@ handleFactorial3 :: String -> Integer -> Handler App App ()
 handleFactorial3 postAction n = do
     (formView, formResult) <- DS.runForm "form" $ factorial2Form n
     case formResult of
-      Just n' -> redirect $ B.pack postAction
+      Just _ -> redirect $ B.pack postAction
       _ -> do
           heistLocal (bindDigestiveSplices formView)
             $ renderWithSplices "Factorial3" $ do
